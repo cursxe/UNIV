@@ -1,6 +1,7 @@
 const express = require("express");
 const routineRouter = express.Router();
 const { requireUser } = require("./utilities");
+
 const {
   getAllPublicRoutines,
   createRoutine,
@@ -8,6 +9,7 @@ const {
   getRoutineById,
   updateRoutine,
 } = require("../db/routines");
+
 const {
   addActivityToRoutine,
   getRoutineActivitiesByRoutine,
@@ -102,27 +104,28 @@ routineRouter.post(
   async (req, res, next) => {
     try {
       const {routineId} = req.params;
+
       const {activityId, count, duration} = req.body;
       const routine_activities = await getRoutineActivitiesByRoutine({
         id: routineId,
       });
-      let alreadyFound = false;
+      let found = false;
       routine_activities.forEach((ra) => {
-        if (ra.activityId == activityId) {
-          alreadyFound = true;
+      if (ra.activityId == activityId) {
+          found = true;
         }
-      });
-      if (alreadyFound) {
-        next({
-          name: "duplicate activityId",
-          message: `Activity ID ${activityId} already exists in Routine ID ${routineId}`,
+    });
+      if (found) {
+       next({
+        name: "duplicate activityId",
+        message: `Activity ID ${activityId} already exists in Routine ID ${routineId}`,
         });
       } else {
       const newRoutine = await addActivityToRoutine({
         routineId,
-        activityId,
         duration,
         count,
+        activityId
       });
       res.send(newRoutine);
     }

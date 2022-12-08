@@ -100,19 +100,18 @@ userRouter.get("/:username/routines", async (req, res, next) => {
   try {
     const { username } = req.params;
     const user = await getUserByUsername(username);
-    if (!user) {
-      res.send({
-        name: "NoUserFound",
-        message: `We had trouble trying to find the user by the name of ${username}`,
-      });
-    } else if (req.user && user.id === req.user.id) {
-      const routines = await getPublicRoutinesByUser({ username: username });
+  if (!user) {
+    res.send({
+    name: "UserNotFound",
+    message: `We had trouble trying to find the user by the name of ${username}`,
+    });
+  } else if (req.user && user.id === req.user.id) {
+    const routines = await getPublicRoutinesByUser({ username: username });
 
-      res.send(routines);
-    } else {
-      const routines = await getPublicRoutinesByUser({ username: username });
-
-      res.send(routines);
+    res.send(routines);
+  } else {
+    const routines = await getPublicRoutinesByUser({ username: username });
+    res.send(routines);
     }
   } catch (error) {
     next(error);
